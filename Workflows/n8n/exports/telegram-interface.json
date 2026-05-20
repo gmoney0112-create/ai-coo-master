@@ -1,0 +1,271 @@
+{
+  "name": "AI COO — Telegram Command Interface",
+  "nodes": [
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000001",
+      "name": "Telegram Bot Listener",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "parameters": {
+        "updates": ["message"],
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": { "id": "1", "name": "Telegram Bot" }
+      }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000002",
+      "name": "Parse Command",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300],
+      "parameters": {
+        "jsCode": "const message = $input.first().json.message;\nconst text = (message.text || '').trim().toLowerCase();\nconst chatId = message.chat.id.toString();\nconst userId = message.from.id.toString();\n\nreturn [{ json: { command: text, chatId, userId, rawMessage: message } }];"
+      }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000003",
+      "name": "Route Command",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [750, 300],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "rules": [
+            {
+              "conditions": { "conditions": [{ "leftValue": "={{ $json.command }}", "rightValue": "/status", "operator": { "type": "string", "operation": "equals" } }] },
+              "renameOutput": true, "outputKey": "/status"
+            },
+            {
+              "conditions": { "conditions": [{ "leftValue": "={{ $json.command }}", "rightValue": "/leads", "operator": { "type": "string", "operation": "equals" } }] },
+              "renameOutput": true, "outputKey": "/leads"
+            },
+            {
+              "conditions": { "conditions": [{ "leftValue": "={{ $json.command }}", "rightValue": "/weekly", "operator": { "type": "string", "operation": "equals" } }] },
+              "renameOutput": true, "outputKey": "/weekly"
+            },
+            {
+              "conditions": { "conditions": [{ "leftValue": "={{ $json.command }}", "rightValue": "/pause", "operator": { "type": "string", "operation": "equals" } }] },
+              "renameOutput": true, "outputKey": "/pause"
+            },
+            {
+              "conditions": { "conditions": [{ "leftValue": "={{ $json.command }}", "rightValue": "/resume", "operator": { "type": "string", "operation": "equals" } }] },
+              "renameOutput": true, "outputKey": "/resume"
+            },
+            {
+              "conditions": { "conditions": [{ "leftValue": "={{ $json.command }}", "rightValue": "/help", "operator": { "type": "string", "operation": "equals" } }] },
+              "renameOutput": true, "outputKey": "/help"
+            }
+          ]
+        },
+        "fallbackOutput": "extra"
+      }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000004",
+      "name": "Fetch Pipeline Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 100],
+      "parameters": {
+        "method": "GET",
+        "url": "https://services.leadconnectorhq.com/contacts/?locationId={{ $env.GHL_SUBACCOUNT_ID }}&limit=100",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.GHL_API_KEY }}" },
+            { "name": "Version", "value": "2021-07-28" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000005",
+      "name": "Build Status Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 100],
+      "parameters": {
+        "jsCode": "const contacts = $input.first().json.contacts || [];\nconst oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);\nconst newLeads = contacts.filter(c => new Date(c.dateAdded) > oneWeekAgo).length;\nconst activeClients = contacts.filter(c => c.tags && c.tags.includes('active-client')).length;\n\nreturn [{ json: {\n  newLeads,\n  totalContacts: contacts.length,\n  activeClients,\n  chatId: $('Parse Command').item.json.chatId\n} }];"
+      }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000006",
+      "name": "Reply: Status",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1500, 100],
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "🟢 STATUS\n\n📥 New leads (7d): {{ $json.newLeads }}\n👥 Total contacts: {{ $json.totalContacts }}\n✅ Active clients: {{ $json.activeClients }}\n\n🕐 {{ new Date().toLocaleString() }}",
+        "additionalFields": {}
+      },
+      "credentials": { "telegramApi": { "id": "1", "name": "Telegram Bot" } }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000007",
+      "name": "Fetch Recent Leads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 250],
+      "parameters": {
+        "method": "GET",
+        "url": "https://services.leadconnectorhq.com/contacts/?locationId={{ $env.GHL_SUBACCOUNT_ID }}&limit=5&sortBy=dateAdded&sortOrder=desc",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.GHL_API_KEY }}" },
+            { "name": "Version", "value": "2021-07-28" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000008",
+      "name": "Build Leads List",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 250],
+      "parameters": {
+        "jsCode": "const contacts = $input.first().json.contacts || [];\nconst list = contacts.slice(0, 5).map((c, i) => {\n  const name = [c.firstName, c.lastName].filter(Boolean).join(' ') || 'Unknown';\n  const date = new Date(c.dateAdded).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });\n  return `${i+1}. ${name} (${c.email || 'no email'}) — ${date}`;\n}).join('\\n');\n\nreturn [{ json: { list, chatId: $('Parse Command').item.json.chatId } }];"
+      }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000009",
+      "name": "Reply: Leads",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1500, 250],
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "📋 LAST 5 LEADS\n\n{{ $json.list }}",
+        "additionalFields": {}
+      },
+      "credentials": { "telegramApi": { "id": "1", "name": "Telegram Bot" } }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000010",
+      "name": "Trigger Weekly Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1000, 400],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.N8N_GROWTH_BROADCAST_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"type\": \"weekly\", \"manual\": true}"
+      }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000011",
+      "name": "Reply: Weekly Triggered",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1250, 400],
+      "parameters": {
+        "chatId": "={{ $('Parse Command').item.json.chatId }}",
+        "text": "📊 Weekly report triggered — check back in a moment.",
+        "additionalFields": {}
+      },
+      "credentials": { "telegramApi": { "id": "1", "name": "Telegram Bot" } }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000012",
+      "name": "Reply: Paused",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1000, 550],
+      "parameters": {
+        "chatId": "={{ $('Parse Command').item.json.chatId }}",
+        "text": "⏸ System paused.\n\nScheduled workflows are deactivated. Lead capture and Telegram commands remain active.\n\nType /resume to restart.",
+        "additionalFields": {}
+      },
+      "credentials": { "telegramApi": { "id": "1", "name": "Telegram Bot" } }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000013",
+      "name": "Reply: Resumed",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1000, 700],
+      "parameters": {
+        "chatId": "={{ $('Parse Command').item.json.chatId }}",
+        "text": "▶️ System resumed.\n\nAll scheduled workflows are active. Health checks restarted.",
+        "additionalFields": {}
+      },
+      "credentials": { "telegramApi": { "id": "1", "name": "Telegram Bot" } }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000014",
+      "name": "Reply: Help",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1000, 850],
+      "parameters": {
+        "chatId": "={{ $('Parse Command').item.json.chatId }}",
+        "text": "🤖 AI COO COMMANDS\n\n/status — Live pipeline snapshot\n/leads — Last 5 leads\n/weekly — Trigger weekly report now\n/pause — Pause scheduled workflows\n/resume — Resume all workflows\n/help — Show this message",
+        "additionalFields": {}
+      },
+      "credentials": { "telegramApi": { "id": "1", "name": "Telegram Bot" } }
+    },
+    {
+      "id": "e5f6a7b8-0005-0000-0000-000000000015",
+      "name": "Reply: Unknown Command",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1000, 1000],
+      "parameters": {
+        "chatId": "={{ $('Parse Command').item.json.chatId }}",
+        "text": "❓ Unknown command: {{ $('Parse Command').item.json.command }}\n\nType /help to see available commands.",
+        "additionalFields": {}
+      },
+      "credentials": { "telegramApi": { "id": "1", "name": "Telegram Bot" } }
+    }
+  ],
+  "connections": {
+    "Telegram Bot Listener": {
+      "main": [[{ "node": "Parse Command", "type": "main", "index": 0 }]]
+    },
+    "Parse Command": {
+      "main": [[{ "node": "Route Command", "type": "main", "index": 0 }]]
+    },
+    "Route Command": {
+      "main": [
+        [{ "node": "Fetch Pipeline Status", "type": "main", "index": 0 }],
+        [{ "node": "Fetch Recent Leads", "type": "main", "index": 0 }],
+        [{ "node": "Trigger Weekly Report", "type": "main", "index": 0 }],
+        [{ "node": "Reply: Paused", "type": "main", "index": 0 }],
+        [{ "node": "Reply: Resumed", "type": "main", "index": 0 }],
+        [{ "node": "Reply: Help", "type": "main", "index": 0 }],
+        [{ "node": "Reply: Unknown Command", "type": "main", "index": 0 }]
+      ]
+    },
+    "Fetch Pipeline Status": {
+      "main": [[{ "node": "Build Status Summary", "type": "main", "index": 0 }]]
+    },
+    "Build Status Summary": {
+      "main": [[{ "node": "Reply: Status", "type": "main", "index": 0 }]]
+    },
+    "Fetch Recent Leads": {
+      "main": [[{ "node": "Build Leads List", "type": "main", "index": 0 }]]
+    },
+    "Build Leads List": {
+      "main": [[{ "node": "Reply: Leads", "type": "main", "index": 0 }]]
+    },
+    "Trigger Weekly Report": {
+      "main": [[{ "node": "Reply: Weekly Triggered", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "id": "telegram-interface-v1",
+  "meta": { "templateCredsSetupCompleted": true }
+}

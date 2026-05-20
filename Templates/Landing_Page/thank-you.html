@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're Booked — AI COO System</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- GA4 — Replace GA_MEASUREMENT_ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+<script>
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());
+gtag('config','GA_MEASUREMENT_ID');
+gtag('event','conversion',{'send_to':'GA_MEASUREMENT_ID','event_category':'booking','event_label':'strategy_call_booked'});
+</script>
+<!-- Facebook Pixel — Replace YOUR_PIXEL_ID -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','YOUR_PIXEL_ID');
+fbq('track','PageView');
+fbq('track','Schedule');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=Schedule&noscript=1"/></noscript>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0e0d;--ink2:#3d3b36;--ink3:#6b6860;
+  --paper:#faf9f6;--paper2:#f2f0eb;--paper3:#e8e5de;
+  --accent:#c8410a;--accent2:#e85d24;--accentbg:#fff1eb;
+  --teal:#0a6b5e;--tealbg:#e8f5f2;
+  --gold:#b5840a;--goldbg:#fef9ec;
+  --border:#d4d0c8;
+  --font-head:'DM Serif Display',serif;
+  --font-ui:'Syne',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --ink:#f0ede6;--ink2:#c8c3b8;--ink3:#8a8680;
+    --paper:#18170f;--paper2:#22201a;--paper3:#2d2b24;
+    --accent:#f07040;--accentbg:#2a1a10;
+    --teal:#30b08a;--tealbg:#0a2820;
+    --gold:#d4a030;--goldbg:#1e1a08;
+    --border:#38352c;
+  }
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-ui);background:var(--paper);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;border-bottom:1px solid var(--border);background:var(--paper)}
+.logo{font-family:var(--font-head);font-size:1.2rem;color:var(--ink)}
+.logo span{color:var(--accent)}
+.nav-back{font-size:.82rem;color:var(--ink3);text-decoration:none;display:flex;align-items:center;gap:.4rem;transition:color .2s}
+.nav-back:hover{color:var(--accent)}
+
+/* HERO */
+.hero{text-align:center;padding:72px 5% 48px;max-width:680px;margin:0 auto}
+.check-circle{width:80px;height:80px;border-radius:50%;background:var(--tealbg);border:2px solid rgba(10,107,94,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-size:36px}
+.hero h1{font-family:var(--font-head);font-size:clamp(1.9rem,4vw,2.6rem);line-height:1.2;color:var(--ink);margin-bottom:16px}
+.hero p{font-size:1rem;color:var(--ink2);line-height:1.7;max-width:520px;margin:0 auto}
+
+/* PREP STEPS */
+.prep{max-width:720px;margin:0 auto;padding:0 5% 64px}
+.prep-label{font-family:var(--font-mono);font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;text-align:center}
+.steps-grid{display:grid;gap:12px}
+.step-card{background:var(--paper2);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;gap:16px;align-items:flex-start}
+.step-num{font-family:var(--font-head);font-size:1.8rem;color:var(--accent);line-height:1;flex-shrink:0;min-width:28px}
+.step-content h3{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:6px}
+.step-content p{font-size:.85rem;color:var(--ink2);line-height:1.6}
+
+/* INFO BOX */
+.info-box{max-width:680px;margin:0 auto 48px;padding:0 5%}
+.info-inner{background:var(--accentbg);border:1px solid rgba(200,65,10,.2);border-left:4px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px}
+.info-inner p{font-size:.9rem;color:var(--ink2);line-height:1.7}
+.info-inner strong{color:var(--accent)}
+
+/* CTA SECTION */
+.cta-section{text-align:center;padding:0 5% 80px;max-width:600px;margin:0 auto}
+.cta-section p{font-size:.85rem;color:var(--ink3);margin-bottom:16px}
+.btn-secondary{display:inline-flex;align-items:center;gap:.5rem;background:transparent;border:1.5px solid var(--border);color:var(--ink2);font-family:var(--font-ui);font-size:.88rem;font-weight:600;padding:.75rem 1.8rem;border-radius:8px;text-decoration:none;transition:all .2s;cursor:pointer}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);max-width:680px;margin:0 auto 40px}
+
+/* WHAT'S NEXT TIMELINE */
+.timeline{max-width:680px;margin:0 auto;padding:0 5% 64px}
+.timeline-label{font-family:var(--font-mono);font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:20px;text-align:center}
+.timeline-items{display:grid;gap:0}
+.tl-item{display:flex;gap:16px;position:relative}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:19px;top:38px;bottom:-12px;width:1px;background:var(--border)}
+.tl-dot{width:38px;height:38px;border-radius:50%;background:var(--paper3);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;font-family:var(--font-mono);font-weight:500;color:var(--ink3);margin-top:2px}
+.tl-item.active .tl-dot{background:var(--tealbg);border-color:var(--teal);color:var(--teal)}
+.tl-body{padding-bottom:28px}
+.tl-body h4{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.tl-body p{font-size:.82rem;color:var(--ink2);line-height:1.5}
+.tl-tag{display:inline-block;font-family:var(--font-mono);font-size:.65rem;padding:2px 8px;border-radius:20px;margin-bottom:6px}
+.tag-done{background:var(--tealbg);color:var(--teal);border:1px solid rgba(10,107,94,.2)}
+.tag-next{background:var(--accentbg);color:var(--accent);border:1px solid rgba(200,65,10,.2)}
+.tag-later{background:var(--paper3);color:var(--ink3);border:1px solid var(--border)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:28px 5%;text-align:center}
+footer p{font-size:.78rem;color:var(--ink3)}
+footer a{color:var(--ink3);text-decoration:none}
+footer a:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">AI <span>COO</span> System</div>
+  <a href="index.html" class="nav-back">← Back to site</a>
+</nav>
+
+<section class="hero">
+  <div class="check-circle">✓</div>
+  <h1>You're booked.<br>Here's what happens next.</h1>
+  <p>Check your email for a calendar confirmation. While you wait — here's how to make the most of your 30-minute strategy call.</p>
+</section>
+
+<section class="prep">
+  <div class="prep-label">How to prepare</div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Think about your current follow-up process</h3>
+        <p>How do leads find you? What happens after they opt in or reach out? Where do things fall through? You don't need a formal answer — just thinking about it before the call means we can move faster.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Have your current tool stack in mind</h3>
+        <p>What CRM, email platform, or funnel tool do you currently use (if any)? We'll be building in GoHighLevel, but knowing where you're starting helps us plan the migration or starting point.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Write down your top 3 operational bottlenecks</h3>
+        <p>What are the 3 things you know you should be doing in your marketing or sales process but aren't? These are exactly what the AI COO System is built to handle — we'll map it to your specific gaps on the call.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="info-box">
+  <div class="info-inner">
+    <p><strong>What to expect on the call:</strong> 30 minutes. We'll show you the live AI COO System running in real time — not slides, not a demo video, the actual system. Then we'll map it to your business and tell you honestly whether it's a fit. No pressure close. If it's not right for you, we'll tell you.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<section class="timeline">
+  <div class="timeline-label">Your journey</div>
+  <div class="timeline-items">
+    <div class="tl-item active">
+      <div class="tl-dot">✓</div>
+      <div class="tl-body">
+        <span class="tl-tag tag-done">Done</span>
+        <h4>Strategy call booked</h4>
+        <p>Check your email for the calendar confirmation and call link.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">2</div>
+      <div class="tl-body">
+        <span class="tl-tag tag-next">Up next</span>
+        <h4>30-minute strategy call</h4>
+        <p>We review your business, show you the live system, and map it to your offer. If it's a fit, we'll walk through the beta offer.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">3</div>
+      <div class="tl-body">
+        <span class="tl-tag tag-later">After call</span>
+        <h4>Onboarding form (10 min)</h4>
+        <p>If you move forward, you'll fill out a quick form with your offer details, tools, and brand. That kicks off the install.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot">4</div>
+      <div class="tl-body">
+        <span class="tl-tag tag-later">Day 7</span>
+        <h4>System live — Loom handoff</h4>
+        <p>Your AI COO System goes live. You receive a Loom walkthrough, a 1-page usage guide, and access to your Telegram command interface.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <p>Want to review what gets installed before the call?</p>
+  <a href="index.html#deliverables" class="btn-secondary">See what gets installed →</a>
+</section>
+
+<footer>
+  <p>© 2026 AI COO System &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; Questions? Reply to your confirmation email.</p>
+</footer>
+
+</body>
+</html>

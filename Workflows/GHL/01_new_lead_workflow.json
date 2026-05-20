@@ -1,0 +1,75 @@
+{
+  "name": "AI COO — New Lead Workflow",
+  "version": "1.0",
+  "trigger": {
+    "type": "Form Submitted",
+    "form": "AI COO Landing Page Form",
+    "description": "Fires immediately when a prospect submits the landing page opt-in form"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "action": "Add Tag",
+      "config": { "tag": "ai-coo-lead" }
+    },
+    {
+      "step": 2,
+      "action": "Add to Pipeline",
+      "config": {
+        "pipeline": "AI COO Leads",
+        "stage": "New Lead"
+      }
+    },
+    {
+      "step": 3,
+      "action": "Wait",
+      "config": { "duration": "0 minutes" }
+    },
+    {
+      "step": 4,
+      "action": "Send Email",
+      "config": {
+        "template": "Email 1 — Welcome",
+        "subject": "Your AI COO System is being configured [what's next]",
+        "fromName": "{{SENDER_NAME}}",
+        "fromEmail": "{{SENDER_EMAIL}}"
+      }
+    },
+    {
+      "step": 5,
+      "action": "Add to Email Sequence",
+      "config": {
+        "sequence": "AI COO 5-Day Nurture",
+        "startAt": "Day 1"
+      }
+    },
+    {
+      "step": 6,
+      "action": "Send Webhook",
+      "config": {
+        "url": "{{N8N_REVENUE_WEBHOOK_URL}}",
+        "method": "POST",
+        "body": {
+          "type": "lead",
+          "firstName": "{{contact.firstName}}",
+          "lastName": "{{contact.lastName}}",
+          "email": "{{contact.email}}",
+          "businessType": "{{contact.customField.businessType}}",
+          "monthlyRevenue": "{{contact.customField.monthlyRevenue}}",
+          "bottleneck": "{{contact.customField.bottleneck}}",
+          "source": "landing-page"
+        }
+      }
+    },
+    {
+      "step": 7,
+      "action": "Create Task",
+      "config": {
+        "title": "Follow up with {{contact.firstName}} within 24hrs",
+        "dueIn": "24 hours",
+        "assignedTo": "{{OWNER_USER_ID}}"
+      }
+    }
+  ],
+  "notes": "This is the primary acquisition workflow. Every opt-in goes through this. Do not add delays before step 4 — immediate email 1 delivery is intentional. The n8n webhook in step 6 triggers the Revenue Department hot-lead scoring and Telegram notification."
+}

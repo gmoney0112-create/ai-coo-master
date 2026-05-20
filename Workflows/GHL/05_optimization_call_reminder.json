@@ -1,0 +1,88 @@
+{
+  "name": "AI COO — 30-Day Optimization Call Reminder",
+  "version": "1.0",
+  "trigger": {
+    "type": "Tag Added",
+    "tag": "active-client",
+    "description": "Fires when a client receives the active-client tag (immediately after Closed Won workflow step 2)"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "action": "Wait",
+      "config": {
+        "duration": "28 days",
+        "note": "28 days — gives 2 days buffer before the 30-day mark"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Send SMS",
+      "config": {
+        "message": "Hey {{contact.firstName}}, your 30-day AI COO optimization call is coming up! Let's review what's working and tune the system. Book here: {{OPTIMIZATION_CALENDAR_LINK}}",
+        "fromNumber": "{{GHL_PHONE_NUMBER}}"
+      }
+    },
+    {
+      "step": 3,
+      "action": "Wait",
+      "config": { "duration": "24 hours" }
+    },
+    {
+      "step": 4,
+      "action": "If/Else",
+      "config": {
+        "condition": "Optimization call NOT booked",
+        "ifTrue": [
+          {
+            "action": "Send Email",
+            "config": {
+              "subject": "Your 30-day optimization call — let's review your AI COO System",
+              "body": "Hey {{contact.firstName}},\n\nIt's been about 30 days since your AI COO System went live.\n\nThis is the call where we review what's working, tune anything that needs adjusting, and talk about what's coming next.\n\nBook your spot here: {{OPTIMIZATION_CALENDAR_LINK}}\n\n— {{SENDER_NAME}}"
+            }
+          }
+        ],
+        "ifFalse": [
+          {
+            "action": "Add Tag",
+            "config": { "tag": "optimization-call-booked" }
+          }
+        ]
+      }
+    },
+    {
+      "step": 5,
+      "action": "Wait",
+      "config": { "duration": "2 days" }
+    },
+    {
+      "step": 6,
+      "action": "If/Else",
+      "config": {
+        "condition": "Optimization call STILL not booked",
+        "ifTrue": [
+          {
+            "action": "Create Task",
+            "config": {
+              "title": "Manual follow-up: {{contact.firstName}} hasn't booked optimization call",
+              "dueIn": "1 day",
+              "assignedTo": "{{OWNER_USER_ID}}"
+            }
+          }
+        ],
+        "ifFalse": []
+      }
+    },
+    {
+      "step": 7,
+      "action": "On Call Booked (Event)",
+      "config": {
+        "trigger": "Appointment booked in optimization calendar",
+        "action": "Add Tag",
+        "tag": "optimization-call-booked",
+        "note": "This step listens for the booking event and tags them so retainer upsell can be offered on the call"
+      }
+    }
+  ],
+  "notes": "The optimization call is where you upsell the monthly retainer ($297–$497/mo). Make sure to prepare a brief review of their system metrics before the call. The manual task in step 6 ensures no client falls through without a human touchpoint."
+}

@@ -1,0 +1,65 @@
+{
+  "name": "AI COO — Payment Received → Kickoff",
+  "version": "1.0",
+  "trigger": {
+    "type": "Pipeline Stage Changed",
+    "pipeline": "AI COO Leads",
+    "stage": "Closed Won",
+    "description": "Fires when an opportunity is manually moved to Closed Won after payment is received"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "action": "Send Email",
+      "config": {
+        "subject": "Welcome to AI COO — here's your onboarding form",
+        "template": "Client Welcome + Onboarding Form",
+        "body": "Hey {{contact.firstName}},\n\nPayment confirmed — welcome to AI COO System.\n\nTo get started, please fill out this onboarding form. It takes about 10 minutes and gives us everything we need to build your system:\n\n{{ONBOARDING_FORM_LINK}}\n\nOnce submitted, we'll begin your installation. You'll have a live system within 7 days.\n\nAny questions before then — just reply here.\n\n— {{SENDER_NAME}}"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Add Tag",
+      "config": { "tag": "active-client" }
+    },
+    {
+      "step": 3,
+      "action": "Remove Tag",
+      "config": { "tag": "ai-coo-lead" }
+    },
+    {
+      "step": 4,
+      "action": "Send Webhook",
+      "config": {
+        "url": "{{N8N_AUTOMATION_WEBHOOK_URL}}",
+        "method": "POST",
+        "body": {
+          "type": "task",
+          "action": "client-kickoff",
+          "clientName": "{{contact.firstName}} {{contact.lastName}}",
+          "email": "{{contact.email}}",
+          "locationId": "{{GHL_SUBACCOUNT_ID}}"
+        }
+      }
+    },
+    {
+      "step": 5,
+      "action": "Create Task",
+      "config": {
+        "title": "Begin AI COO install for {{contact.firstName}} {{contact.lastName}} — due in 3 days",
+        "dueIn": "3 days",
+        "assignedTo": "{{OWNER_USER_ID}}",
+        "priority": "high"
+      }
+    },
+    {
+      "step": 6,
+      "action": "Move to Pipeline",
+      "config": {
+        "pipeline": "AI COO — Delivery",
+        "stage": "Install In Progress"
+      }
+    }
+  ],
+  "notes": "This is the most important workflow — it starts the clock on the 7-day delivery promise. Step 5 creates a high-priority task so you don't miss it. Step 6 moves them out of the sales pipeline and into the delivery pipeline so you can track install status separately from new leads."
+}

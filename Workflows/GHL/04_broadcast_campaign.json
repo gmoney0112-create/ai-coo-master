@@ -1,0 +1,60 @@
+{
+  "name": "AI COO — Broadcast Campaign Trigger",
+  "version": "1.0",
+  "trigger": {
+    "type": "Manual or Webhook",
+    "description": "Triggered manually from GHL or via webhook from n8n Growth Department workflow"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "action": "Filter Contacts",
+      "config": {
+        "includeTag": "ai-coo-lead",
+        "excludeTag": "active-client",
+        "excludeTag2": "unsubscribed",
+        "description": "Only send to leads, never to active clients or unsubscribes"
+      }
+    },
+    {
+      "step": 2,
+      "action": "Send Email Broadcast",
+      "config": {
+        "subject": "{{BROADCAST_SUBJECT}}",
+        "template": "{{BROADCAST_TEMPLATE}}",
+        "fromName": "{{SENDER_NAME}}",
+        "fromEmail": "{{SENDER_EMAIL}}",
+        "scheduleFor": "{{BROADCAST_SEND_TIME}}"
+      }
+    },
+    {
+      "step": 3,
+      "action": "Wait",
+      "config": { "duration": "48 hours" }
+    },
+    {
+      "step": 4,
+      "action": "If/Else",
+      "config": {
+        "condition": "Email NOT opened",
+        "ifTrue": [
+          {
+            "action": "Send Email",
+            "config": {
+              "subject": "{{BROADCAST_SUBJECT_VARIANT}}",
+              "template": "{{BROADCAST_TEMPLATE}}",
+              "note": "Use a different subject line for the unopened resend — same body is fine"
+            }
+          }
+        ],
+        "ifFalse": [
+          {
+            "action": "Add Tag",
+            "config": { "tag": "broadcast-engaged" }
+          }
+        ]
+      }
+    }
+  ],
+  "notes": "Use sparingly — 1-2 broadcasts per month max to avoid list fatigue. The 48-hour resend with different subject line typically recovers 20-30% more opens. Replace BROADCAST_SUBJECT and BROADCAST_TEMPLATE with the specific campaign before triggering."
+}

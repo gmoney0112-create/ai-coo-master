@@ -1,0 +1,67 @@
+{
+  "name": "AI COO — No-Show Follow-Up",
+  "version": "1.0",
+  "trigger": {
+    "type": "Appointment Status Changed",
+    "status": "No-Show",
+    "description": "Fires when a booked strategy call is marked as no-show in GHL calendar"
+  },
+  "steps": [
+    {
+      "step": 1,
+      "action": "Wait",
+      "config": { "duration": "30 minutes" }
+    },
+    {
+      "step": 2,
+      "action": "Send SMS",
+      "config": {
+        "message": "Hey {{contact.firstName}}, we missed you on our call today! Would you like to reschedule? Here's my calendar: {{CALENDAR_LINK}}",
+        "fromNumber": "{{GHL_PHONE_NUMBER}}"
+      }
+    },
+    {
+      "step": 3,
+      "action": "Wait",
+      "config": { "duration": "24 hours" }
+    },
+    {
+      "step": 4,
+      "action": "Send Email",
+      "config": {
+        "subject": "Missed our call — here's what we were going to cover",
+        "template": "No-Show Follow-Up Email",
+        "body": "Hey {{contact.firstName}},\n\nWe had a strategy call booked and I wanted to make sure you didn't miss out on what we were going to cover.\n\nWe were going to walk through your current lead flow, show you the live AI COO System, and map it to your business. Takes 30 minutes and you'd leave knowing exactly what gets installed.\n\nIf the timing was off, no worries — here's my calendar to rebook at a time that works: {{CALENDAR_LINK}}\n\n— {{SENDER_NAME}}"
+      }
+    },
+    {
+      "step": 5,
+      "action": "Wait",
+      "config": { "duration": "3 days" }
+    },
+    {
+      "step": 6,
+      "action": "If/Else",
+      "config": {
+        "condition": "Contact has NOT booked new appointment",
+        "ifTrue": [
+          {
+            "action": "Move Pipeline Stage",
+            "config": { "pipeline": "AI COO Leads", "stage": "Nurture" }
+          },
+          {
+            "action": "Add Tag",
+            "config": { "tag": "no-show-nurtured" }
+          }
+        ],
+        "ifFalse": [
+          {
+            "action": "Add Tag",
+            "config": { "tag": "rebooked" }
+          }
+        ]
+      }
+    }
+  ],
+  "notes": "No-shows are not dead leads — they booked once, which means intent was there. The SMS fires first because it's faster and more personal. The 3-day wait before moving to Nurture gives them time to rebook without feeling pressured."
+}

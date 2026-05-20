@@ -1,0 +1,150 @@
+{
+  "name": "AI COO — Tech Department (Health Monitor)",
+  "nodes": [
+    {
+      "id": "d4e5f6a7-0004-0000-0000-000000000001",
+      "name": "Health Check — Every 30min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "minutes", "minutesInterval": 30 }]
+        }
+      }
+    },
+    {
+      "id": "d4e5f6a7-0004-0000-0000-000000000002",
+      "name": "Ping GHL Webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 200],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.GHL_WEBHOOK_URL }}",
+        "options": { "timeout": 10000, "response": { "response": { "fullResponse": true } } }
+      },
+      "continueOnFail": true
+    },
+    {
+      "id": "d4e5f6a7-0004-0000-0000-000000000003",
+      "name": "Ping n8n Health",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 400],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.N8N_HEALTH_URL || 'http://localhost:5678/healthz' }}",
+        "options": { "timeout": 10000, "response": { "response": { "fullResponse": true } } }
+      },
+      "continueOnFail": true
+    },
+    {
+      "id": "d4e5f6a7-0004-0000-0000-000000000004",
+      "name": "Evaluate Health",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 300],
+      "parameters": {
+        "jsCode": "const ghlResult = $('Ping GHL Webhook').first();\nconst n8nResult = $('Ping n8n Health').first();\n\nconst failedServices = [];\n\nif (ghlResult.json.error || (ghlResult.json.statusCode && ghlResult.json.statusCode >= 500)) {\n  failedServices.push('GHL Webhook');\n}\nif (n8nResult.json.error || (n8nResult.json.statusCode && n8nResult.json.statusCode >= 500)) {\n  failedServices.push('n8n Instance');\n}\n\nreturn [{ json: {\n  healthy: failedServices.length === 0,\n  failedServices,\n  checkedAt: new Date().toISOString()\n} }];"
+      }
+    },
+    {
+      "id": "d4e5f6a7-0004-0000-0000-000000000005",
+      "name": "Any Failures?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1000, 300],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.healthy }}",
+              "rightValue": false,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "d4e5f6a7-0004-0000-0000-000000000006",
+      "name": "⚠️ System Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1250, 150],
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "⚠️ SYSTEM ALERT\n\nFailed services: {{ $json.failedServices.join(', ') }}\nDetected at: {{ $json.checkedAt }}\n\nCheck your infrastructure immediately.",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": { "id": "1", "name": "Telegram Bot" }
+      }
+    },
+    {
+      "id": "d4e5f6a7-0004-0000-0000-000000000007",
+      "name": "Create GHL Alert Task",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/tasks/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.GHL_API_KEY }}" },
+            { "name": "Version", "value": "2021-07-28" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"title\": \"TECH ALERT: {{ $json.failedServices.join(', ') }} offline\", \"dueDate\": \"{{ new Date().toISOString() }}\", \"locationId\": \"{{ $env.GHL_SUBACCOUNT_ID }}\"}"
+      }
+    },
+    {
+      "id": "d4e5f6a7-0004-0000-0000-000000000008",
+      "name": "All Healthy — No Action",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1250, 450],
+      "parameters": {}
+    }
+  ],
+  "connections": {
+    "Health Check — Every 30min": {
+      "main": [
+        [
+          { "node": "Ping GHL Webhook", "type": "main", "index": 0 },
+          { "node": "Ping n8n Health", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Ping GHL Webhook": {
+      "main": [[{ "node": "Evaluate Health", "type": "main", "index": 0 }]]
+    },
+    "Ping n8n Health": {
+      "main": [[{ "node": "Evaluate Health", "type": "main", "index": 0 }]]
+    },
+    "Evaluate Health": {
+      "main": [[{ "node": "Any Failures?", "type": "main", "index": 0 }]]
+    },
+    "Any Failures?": {
+      "main": [
+        [
+          { "node": "⚠️ System Alert", "type": "main", "index": 0 },
+          { "node": "Create GHL Alert Task", "type": "main", "index": 0 }
+        ],
+        [{ "node": "All Healthy — No Action", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "id": "tech-department-v1",
+  "meta": { "templateCredsSetupCompleted": true }
+}
