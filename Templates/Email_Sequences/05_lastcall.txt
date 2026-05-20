@@ -1,0 +1,26 @@
+SUBJECT: Last call for the $997 rate
+
+Hey {{FIRST_NAME}},
+
+This is the last email in this sequence.
+
+The AI COO System beta is 10 installs at $997. After that, the price goes to $2,997.
+
+I'm not manufacturing urgency — there are a fixed number of hours in the week, and each install takes about 5 days of focused build time. When the beta slots fill, they fill.
+
+If you've been thinking about it:
+
+The system installs in 7 days.
+You control it from Telegram.
+You get 30 days of support and an optimization call.
+The investment is $997.
+
+If it's not the right time, no hard feelings. I'll still be here when it is.
+
+If it is the right time, here's the link to book a call: {{CALENDAR_LINK}}
+
+The call is 30 minutes. No slides. I show you the live system and we figure out if it fits your business.
+
+— {{SENDER_NAME}}
+
+P.S. If you have a specific question before booking, just reply here.
