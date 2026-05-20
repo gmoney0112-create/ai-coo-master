@@ -2,35 +2,104 @@
 
 This folder holds utility scripts for the AI COO System.
 
-## Planned Scripts
+All scripts are run from the **repo root** directory.
 
-| File | Purpose | Language |
-|---|---|---|
-| `new_client.sh` | Scaffolds a new client folder from `demo_client` template | Bash |
-| `validate_env.js` | Validates a client's `env/client.env` file for missing required fields | Node.js |
-| `smoke_test.js` | Runs a full smoke test against a deployed client funnel (pixel events, webhook, redirect) | Node.js |
-| `sync_workflows.sh` | Exports GHL and n8n workflow JSONs into the correct client/master folders | Bash |
-| `deploy_client.sh` | End-to-end: scaffold + validate + import workflows + run smoke test | Bash |
+---
 
-## How to Add a Script
+## Scripts Index
 
-1. Create the script file in this folder.
-2. Add a row to the table above.
-3. Add usage instructions in a comment block at the top of the script.
-4. Test it against `demo_client` before using on a real client.
+| File | Purpose | Language | Status |
+|---|---|---|---|
+| `new_client.sh` | Scaffolds a new client folder from `demo_client` template | Bash | ✅ Ready |
+| `validate_env.js` | Validates a client’s `env/client.env` for required fields | Node.js | ✅ Ready |
+| `smoke_test.js` | Runs env, folder, and URL reachability checks for a client | Node.js | ✅ Ready |
 
-## Usage Example
+---
+
+## Usage
+
+### 1. Scaffold a New Client
 
 ```bash
-# Scaffold a new client from the demo_client template
-bash Scripts/new_client.sh my_client_name
-
-# Validate the new client's env file
-node Scripts/validate_env.js Clients/my_client_name/env/client.env
-
-# Run a smoke test against the deployed funnel
-node Scripts/smoke_test.js Clients/my_client_name/env/client.env
+bash Scripts/new_client.sh <client_name>
 ```
 
-> Scripts are not required to deploy — they are helpers to speed up the process at scale.
-> For Client 1, manual deployment following `Docs/Deployment_Checklist.md` is sufficient.
+Example:
+```bash
+bash Scripts/new_client.sh soul_prosperity
+```
+
+This copies the full `Clients/demo_client` folder structure into `Clients/soul_prosperity` and creates a pre-filled `env/client.env` template.
+
+---
+
+### 2. Validate Client Environment
+
+```bash
+node Scripts/validate_env.js <client_name>
+```
+
+Example:
+```bash
+node Scripts/validate_env.js soul_prosperity
+```
+
+Checks that all required fields in `Clients/soul_prosperity/env/client.env` are present and non-empty. Warns on optional fields. Exits with code `1` if any required field is missing.
+
+**Required fields checked:**
+- `CLIENT_NAME`
+- `GHL_SUBACCOUNT_ID`
+- `GHL_API_KEY`
+- `GHL_WEBHOOK_URL`
+- `QUIZ_URL`
+- `THANK_YOU_URL`
+- `META_PIXEL_ID`
+- `GA4_MEASUREMENT_ID`
+- `GA4_API_SECRET`
+
+---
+
+### 3. Run Smoke Test
+
+```bash
+node Scripts/smoke_test.js <client_name>
+```
+
+Example:
+```bash
+node Scripts/smoke_test.js soul_prosperity
+```
+
+**What it checks:**
+- [1] Environment: required fields present and correctly formatted
+- [2] Folder structure: all expected subdirectories exist
+- [3] URL reachability: QUIZ_URL and THANK_YOU_URL return 2xx/3xx (skipped if placeholder)
+- [4] GHL webhook URL is a valid HTTPS URL
+
+Exits `0` on all pass, `1` on any failure.
+
+---
+
+## Recommended Onboarding Flow
+
+```bash
+# Step 1: Scaffold
+bash Scripts/new_client.sh soul_prosperity
+
+# Step 2: Fill in env values
+nano Clients/soul_prosperity/env/client.env
+
+# Step 3: Validate
+node Scripts/validate_env.js soul_prosperity
+
+# Step 4: Smoke test
+node Scripts/smoke_test.js soul_prosperity
+```
+
+---
+
+## Notes
+
+- Never commit real API keys. The `env/` folder is gitignored per client.
+- Placeholder values in `client.env` use the format `your-value-here`.
+- The `smoke_test.js` skips URL checks for placeholder values automatically.
