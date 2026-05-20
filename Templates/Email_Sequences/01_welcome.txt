@@ -1,0 +1,26 @@
+SUBJECT: Your AI COO System is being configured [what's next]
+
+Hey {{FIRST_NAME}},
+
+Thanks for signing up — you just took the first step toward running your business with a full operations system behind it.
+
+Here's what happens next:
+
+Over the next 7 days I'm going to send you a few emails that explain exactly what the AI COO System installs, why it works, and what it looked like when I deployed it in my own business.
+
+Then, if it sounds like a fit, you'll have the chance to claim one of the 10 beta spots at $997.
+
+Quick summary of what the system actually does:
+
+— Captures and follows up with every lead automatically
+— Sends your campaigns and broadcasts on a schedule
+— Monitors your tools 24/7 and alerts you if something breaks
+— Gives you a live command interface so you always know what's running
+
+It's not a chatbot. It's the operational layer your business should already have — installed in 7 days.
+
+More in the next email.
+
+— {{SENDER_NAME}}
+
+P.S. If you want to skip ahead and book a strategy call now, here's the link: {{CALENDAR_LINK}}
