@@ -1,0 +1,28 @@
+SUBJECT: What happened when I installed this in my own business
+
+Hey {{FIRST_NAME}},
+
+When I first built this system, I used my own business as the test case.
+
+Before: I was manually following up with leads within a day or two — when I remembered. Campaigns went out when I found time. My email list heard from me about once a month, if that.
+
+After installing the system:
+
+Every new lead gets followed up within 5 minutes. Automatically.
+My weekly report hits my Telegram every Monday at 9am — leads, calls booked, pipeline count.
+If anything in my stack goes down, I get a ping before a client notices.
+I can type /status from my phone and see exactly what's running.
+
+Nothing changed about how hard I work. The system just started running the parts I was too busy to run consistently.
+
+That's the point. It doesn't replace your judgment — it handles the repetitive operational tasks that eat your week.
+
+The installation takes 7 days. You fill out an onboarding form and hand it over. I build it. You get a Loom walkthrough of the finished system and a 1-page guide.
+
+Then it runs.
+
+There are 8 beta spots left at $997. I'll show you exactly what gets installed on a 30-minute call.
+
+— {{SENDER_NAME}}
+
+Book a call: {{CALENDAR_LINK}}
