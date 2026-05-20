@@ -1,0 +1,39 @@
+SUBJECT: Here's what you'd get installed for $997 [full breakdown]
+
+Hey {{FIRST_NAME}},
+
+Here's exactly what the AI COO System installs in your business:
+
+WORKFLOWS (n8n)
+— Master Router: one webhook receives everything and routes to the right department
+— Revenue Department: lead capture, pipeline movement, follow-up sequences
+— Growth Department: scheduled broadcasts, campaign triggers, referral tracking
+— Tech Department: 30-minute health checks, instant alerts if anything breaks
+— Automation Department: reminders, task creation, data syncing
+
+GHL SETUP
+— Your pipeline (New Lead → Contacted → Proposal Sent → Closed Won)
+— 3 automations: new lead workflow, no-show follow-up, payment received → kickoff
+— 5-email welcome sequence deployed for your specific offer
+— Landing page + thank-you page built and live
+
+INTERFACES
+— Telegram bot connected to your entire system
+— /status — live snapshot of leads, calls, and active clients
+— /leads — your last 5 leads
+— /pause and /resume — pause all automated sequences instantly
+— /weekly — trigger your weekly report on demand
+
+SUPPORT
+— 30-day support window post-launch
+— 5-minute Loom handoff walkthrough
+— 1-page usage guide
+— 30-day optimization call
+
+This takes 7 days from onboarding form to live system.
+
+Beta price: $997 for the first 10 clients. 8 spots left.
+
+Book your strategy call here: {{CALENDAR_LINK}}
+
+— {{SENDER_NAME}}
