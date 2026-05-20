@@ -1,0 +1,26 @@
+SUBJECT: The real reason your business isn't growing (it's not what you think)
+
+Hey {{FIRST_NAME}},
+
+Most business owners I talk to have the same problem.
+
+It's not that they don't know what to do. It's that they never get to it.
+
+You probably have a list somewhere — a sequence you meant to write, a campaign you meant to launch, a follow-up process you meant to build. But operations keep eating the day. And the important stuff stays on the list.
+
+That's an operations problem, not an ideas problem.
+
+A full-time COO exists to solve exactly this. They make sure the systems run, the follow-ups happen, and the marketing doesn't stop when you're busy. They cost $150K+ a year.
+
+The AI COO System does the same job for $997 one-time.
+
+It installs four departments into your business:
+
+Revenue: Follows up with every lead automatically, moves them through your pipeline, triggers sequences without you
+Growth: Sends your broadcasts and campaigns on a schedule you set once
+Tech: Watches your infrastructure 24/7 and alerts you if anything breaks
+Automation: Handles reminders, task creation, and data syncing so nothing falls through
+
+Tomorrow I'll show you what it looked like when I built and deployed this in my own business.
+
+— {{SENDER_NAME}}
